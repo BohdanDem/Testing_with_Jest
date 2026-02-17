@@ -15,11 +15,11 @@ describe('Utils test suite', ()=>{
       expect(actual).toBe('ABC');
     })
     
-    it('Should throw error on invalid argument - function', ()=>{
+    it('Should throw error on invalid argument - function', ()=>{  //тестування помилок
       function expectError() {
         const actual = sut.toUpperCase('');
       }
-      expect(expectError).toThrow();
+      expect(expectError).toThrow(); // toThrow перевіряє, чи викинуло помилку
       expect(expectError).toThrow('Invalid argument!');
     })
     
