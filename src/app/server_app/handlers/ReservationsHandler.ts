@@ -64,14 +64,21 @@ export class ReservationsHandler {
     }
 
     private async handlePost() {
-        const requestBody: Reservation = await getRequestBody(this.request);
-        if (!this.isValidReservation(requestBody)) {
+        const requestBody: Partial<Reservation> = await getRequestBody(this.request);
+        // Валідуємо без id, щоб не дозволити створення резервації тільки з id
+        const reservationWithoutId: Partial<Reservation> = { ...requestBody };
+        delete reservationWithoutId.id;
+        const reservationForValidation: Reservation = { ...reservationWithoutId, id: '' } as Reservation;
+        
+        if (!this.isValidReservation(reservationForValidation)) {
             this.response.statusCode = HTTP_CODES.BAD_REQUEST;
             this.response.write(JSON.stringify('Incomplete reservation!'));
             return;
         }
 
-        const reservationId = await this.reservationsDataAccess.createReservation(requestBody);
+        // Після успішної валідації створюємо резервацію з id
+        const reservation: Reservation = { ...requestBody, id: requestBody.id || '' } as Reservation;
+        const reservationId = await this.reservationsDataAccess.createReservation(reservation);
         this.response.statusCode = HTTP_CODES.CREATED;
         this.response.writeHead(HTTP_CODES.CREATED, { 'Content-Type': 'application/json' });
         this.response.write(JSON.stringify({ reservationId }));
@@ -200,7 +207,12 @@ export class ReservationsHandler {
                 hasRightKeys = false;
             }
         }
-        return hasRightKeys;
+        // Перевірка наявності всіх обов'язкових полів (окрім id, який може бути порожнім)
+        const requiredFields: (keyof Reservation)[] = ['room', 'user', 'startDate', 'endDate'];
+        const hasAllRequiredFields = requiredFields.every(field => 
+            reservation[field] !== undefined && reservation[field] !== null && reservation[field] !== ''
+        );
+        return hasRightKeys && hasAllRequiredFields;
     }
 
 }

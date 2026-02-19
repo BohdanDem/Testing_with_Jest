@@ -1,6 +1,6 @@
 import {calculateComplexity, OtherStringUtils, toUpperCaseWithCb} from "../../app/doubles/OtherUtils";
 
-describe.skip('OtherUtils test suite', ()=>{
+describe('OtherUtils test suite', ()=>{
   
   describe('OtherStringUtils tests with spies', ()=>{
     
