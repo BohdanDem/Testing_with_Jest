@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "test-c": "jest --coverage",
+    "itest": "jest --config itest.config.ts",
     "start": "ts-node src/app/server_app/Launcher.ts"
   },
   "keywords": [],
